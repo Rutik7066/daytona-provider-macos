@@ -304,15 +304,12 @@ func (p MacProvider) CheckRequirements() (*[]provider.RequirementStatus, error) 
 	return &results, nil
 }
 
-// FIXME
-// Workspace directory and project directory will be on mac vm.
 func (p *MacProvider) getWorkspaceDir(workspaceReq *provider.WorkspaceRequest) (string, error) {
-	return fmt.Sprintf("C:\\Users\\daytona\\Desktop\\%s\\%s", workspaceReq.Workspace.Target.Name, workspaceReq.Workspace.Name), nil
+	return fmt.Sprintf("/Users/daytona/Desktop/%s/%s", workspaceReq.Workspace.Target.Name, workspaceReq.Workspace.Name), nil
 }
 
-// FIXME
 func (p *MacProvider) getTargetDir(targetReq *provider.TargetRequest) (string, error) {
-	return fmt.Sprintf("C:\\Users\\daytona\\Desktop\\%s", targetReq.Target.Name), nil
+	return fmt.Sprintf("/Users/daytona/Desktop/%s", targetReq.Target.Name), nil
 }
 
 func (p *MacProvider) getSshClient(targetOptionsJson string) (*ssh.Client, error) {

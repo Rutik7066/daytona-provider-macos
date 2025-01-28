@@ -124,7 +124,7 @@ func (d *DockerClient) initWorkspaceContainer(target *models.Target, logWriter i
 	}
 
 	logWriter.Write([]byte("Visit http://localhost:8006 and Set up MacOS \n"))
-	logWriter.Write([]byte("Set USERNAME and PASSWORD  to daytona\n"))
+	logWriter.Write([]byte(`Set USERNAME and PASSWORD to  "daytona"\n`))
 	logWriter.Write([]byte("Please turn on Remote Login to continue.....\n"))
 	time.Sleep(15 * time.Second)
 
