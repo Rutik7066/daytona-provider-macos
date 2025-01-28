@@ -201,7 +201,6 @@ func (d *DockerClient) initWorkspaceContainer(target *models.Target, logWriter i
 func GetContainerCreateConfig(target *models.Target, toolboxApiHostPort *uint16) *container.Config {
 	envVars := []string{
 		fmt.Sprintf("ARGUMENTS=%s", "-device e1000,netdev=net0  -netdev user,id=net0,hostfwd=tcp::22-:22,hostfwd=tcp::2222-:2222 "),
-		fmt.Sprintf("RAM_SIZE=%s", "4G"),
 	}
 
 	for key, value := range target.EnvVars {
