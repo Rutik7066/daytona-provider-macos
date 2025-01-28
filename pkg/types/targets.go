@@ -20,28 +20,28 @@ func GetTargetConfigManifest() *models.TargetConfigManifest {
 	return &models.TargetConfigManifest{
 		"Remote Hostname": models.TargetConfigProperty{
 			Type:              models.TargetConfigPropertyTypeString,
-			DisabledPredicate: "^local-mac$",
+			DisabledPredicate: "^local-macos$",
 		},
 		"Remote Port": models.TargetConfigProperty{
 			Type:              models.TargetConfigPropertyTypeInt,
 			DefaultValue:      "22",
-			DisabledPredicate: "^local-mac$",
+			DisabledPredicate: "^local-macos$",
 		},
 		"Remote User": models.TargetConfigProperty{
 			Type: models.TargetConfigPropertyTypeString,
 			// TODO: Add docs entry
 			Description:       "Note: non-root user required",
-			DisabledPredicate: "^local-mac$",
+			DisabledPredicate: "^local-macos$",
 		},
 		"Remote Password": models.TargetConfigProperty{
 			Type:              models.TargetConfigPropertyTypeString,
-			DisabledPredicate: "^local-mac$",
+			DisabledPredicate: "^local-macos$",
 			InputMasked:       true,
 		},
 		"Remote Private Key Path": models.TargetConfigProperty{
 			Type:              models.TargetConfigPropertyTypeFilePath,
 			DefaultValue:      "~/.ssh",
-			DisabledPredicate: "^local-mac$",
+			DisabledPredicate: "^local-macos$",
 		},
 		"Sock Path": models.TargetConfigProperty{
 			Type:         models.TargetConfigPropertyTypeString,
@@ -51,7 +51,7 @@ func GetTargetConfigManifest() *models.TargetConfigManifest {
 			Type:              models.TargetConfigPropertyTypeString,
 			DefaultValue:      "/tmp/daytona-data",
 			Description:       "The directory on the remote host where the target data will be stored",
-			DisabledPredicate: "^local-mac$",
+			DisabledPredicate: "^local-macos$",
 		},
 	}
 }

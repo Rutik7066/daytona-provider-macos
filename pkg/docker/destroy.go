@@ -31,7 +31,7 @@ func (d *DockerClient) DestroyTarget(target *models.Target, targetDir string, lo
 		}
 	}
 
-	err = d.WaitForWindowsBoot(c.ID, d.targetOptions.RemoteHostname)
+	err = d.WaitForMacOsBoot(c.ID, d.targetOptions.RemoteHostname)
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func (d *DockerClient) DestroyTarget(target *models.Target, targetDir string, lo
 		return err
 	}
 
-	cmd := fmt.Sprintf("rmdir /s /q %s", targetDir)
+	cmd := fmt.Sprintf("rm -rf %s", targetDir)
 	err = d.ExecuteCommand(cmd, logWriter, sshClient)
 	if err != nil {
 		return err
@@ -72,7 +72,7 @@ func (d *DockerClient) DestroyWorkspace(workspace *models.Workspace, workspaceDi
 			return err
 		}
 	}
-	err = d.WaitForWindowsBoot(c.ID, d.targetOptions.RemoteHostname)
+	err = d.WaitForMacOsBoot(c.ID, d.targetOptions.RemoteHostname)
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (d *DockerClient) DestroyWorkspace(workspace *models.Workspace, workspaceDi
 		return err
 	}
 
-	cmd := fmt.Sprintf("rmdir /s /q %s", workspaceDir)
+	cmd := fmt.Sprintf("rm -rf %s", workspaceDir)
 	err = d.ExecuteCommand(cmd, logWriter, sshClient)
 	if err != nil {
 		return err

@@ -38,7 +38,7 @@ func (d *DockerClient) CreateWorkspace(opts *CreateWorkspaceOptions) error {
 		}
 	}
 
-	err = d.WaitForWindowsBoot(c.ID, d.targetOptions.RemoteHostname)
+	err = d.WaitForMacOsBoot(c.ID, d.targetOptions.RemoteHostname)
 	if err != nil {
 		return err
 	}

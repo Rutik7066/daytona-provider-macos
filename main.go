@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	p "github.com/Rutik7066/daytona-provider-mac/pkg/provider"
+	p "github.com/Rutik7066/daytona-provider-macos/pkg/provider"
 	"github.com/daytonaio/daytona/pkg/provider"
 	"github.com/daytonaio/daytona/pkg/runner/providermanager"
 	"github.com/hashicorp/go-hclog"
@@ -19,7 +19,7 @@ func main() {
 	hc_plugin.Serve(&hc_plugin.ServeConfig{
 		HandshakeConfig: providermanager.ProviderHandshakeConfig,
 		Plugins: map[string]hc_plugin.Plugin{
-			"mac-provider": &provider.ProviderPlugin{Impl: &p.MacProvider{}},
+			"macos-provider": &provider.ProviderPlugin{Impl: &p.MacProvider{}},
 		},
 		Logger: logger,
 	})

@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-func (d *DockerClient) WaitForWindowsBoot(containerID string, hostname *string) error {
+func (d *DockerClient) WaitForMacOsBoot(containerID string, hostname *string) error {
 	addr := "localhost:10022"
 	if hostname != nil {
 		addr = fmt.Sprintf("%s:10022", *hostname)

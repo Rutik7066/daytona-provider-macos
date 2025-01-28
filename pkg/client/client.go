@@ -8,8 +8,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/Rutik7066/daytona-provider-mac/pkg/ssh_tunnel/util"
-	"github.com/Rutik7066/daytona-provider-mac/pkg/types"
+	"github.com/Rutik7066/daytona-provider-macos/pkg/ssh_tunnel/util"
+	"github.com/Rutik7066/daytona-provider-macos/pkg/types"
 
 	"github.com/docker/docker/client"
 

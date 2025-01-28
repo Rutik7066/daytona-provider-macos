@@ -11,7 +11,7 @@ import (
 	"runtime"
 	"strings"
 
-	provider_types "github.com/Rutik7066/daytona-provider-mac/pkg/types"
+	provider_types "github.com/Rutik7066/daytona-provider-macos/pkg/types"
 	"github.com/daytonaio/daytona/pkg/common"
 	"github.com/daytonaio/daytona/pkg/models"
 	"github.com/daytonaio/daytona/pkg/ssh"
@@ -38,7 +38,7 @@ type IDockerClient interface {
 	DestroyTarget(target *models.Target, targetDir string, logWriter io.Writer) error
 
 	StartTarget(target *models.Target, logWriter io.Writer) error
-	StopTarget(logWriter io.Writer) error
+	StopTarget(target *models.Target, logWriter io.Writer) error
 
 	GetWorkspaceProviderMetadata(workspace *models.Workspace) (string, error)
 	GetTargetProviderMetadata(t *models.Target) (string, error)
@@ -70,19 +70,19 @@ func (d *DockerClient) GetTargetContainerName(target *models.Target) string {
 	containers, err := d.apiClient.ContainerList(context.Background(), container.ListOptions{
 		Filters: filters.NewArgs(
 			filters.Arg("label", fmt.Sprintf("daytona.target.id=%s", target.Id)),
-			filters.Arg("label", fmt.Sprintf("daytona.target.name=%s", target.Name+"-daytona-mac")),
+			filters.Arg("label", fmt.Sprintf("daytona.target.name=%s", target.Name+"-daytona-macos")),
 		),
 		All: true,
 	})
 	if err != nil || len(containers) == 0 {
-		return target.Id + "-daytona-mac"
+		return target.Id + "-daytona-macos"
 	}
 
 	return containers[0].ID
 }
 
 func (d *DockerClient) GetTargetVolumeName(target *models.Target) string {
-	return target.Id + "-" + target.Name + "-daytona-mac"
+	return target.Id + "-" + target.Name + "-daytona-macos"
 }
 
 func (d *DockerClient) OpenWebUI(hostname *string, logWriter io.Writer) {
@@ -103,13 +103,13 @@ func (d *DockerClient) OpenWebUI(hostname *string, logWriter io.Writer) {
 	}
 
 	if err != nil {
-		logWriter.Write([]byte(fmt.Sprintf("Windows is started visit %s\n", url)))
+		logWriter.Write([]byte(fmt.Sprintf("MacOS is started visit %s\n", url)))
 	}
 
 }
 
-func (d *DockerClient) IsLocalWindowsTarget(providerName, options, runnerId string) bool {
-	if providerName != "mac-provider" {
+func (d *DockerClient) IsLocalMacTarget(providerName, options, runnerId string) bool {
+	if providerName != "macos-provider" {
 		return false
 	}
 

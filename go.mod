@@ -1,4 +1,4 @@
-module github.com/Rutik7066/daytona-provider-mac
+module github.com/Rutik7066/daytona-provider-macos
 
 go 1.23.0
 

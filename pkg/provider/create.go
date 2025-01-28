@@ -4,10 +4,10 @@ import (
 	"errors"
 	"io"
 
-	log_writers "github.com/Rutik7066/daytona-provider-mac/internal/log"
+	log_writers "github.com/Rutik7066/daytona-provider-macos/internal/log"
 
-	"github.com/Rutik7066/daytona-provider-mac/pkg/docker"
-	"github.com/Rutik7066/daytona-provider-mac/pkg/types"
+	"github.com/Rutik7066/daytona-provider-macos/pkg/docker"
+	"github.com/Rutik7066/daytona-provider-macos/pkg/types"
 	"github.com/daytonaio/daytona/pkg/logs"
 	"github.com/daytonaio/daytona/pkg/provider"
 	provider_util "github.com/daytonaio/daytona/pkg/provider/util"

@@ -9,12 +9,12 @@ import (
 	"path"
 	"runtime"
 
-	internal "github.com/Rutik7066/daytona-provider-mac/internal"
-	log_writers "github.com/Rutik7066/daytona-provider-mac/internal/log"
-	"github.com/Rutik7066/daytona-provider-mac/pkg/client"
-	"github.com/Rutik7066/daytona-provider-mac/pkg/types"
+	internal "github.com/Rutik7066/daytona-provider-macos/internal"
+	log_writers "github.com/Rutik7066/daytona-provider-macos/internal/log"
+	"github.com/Rutik7066/daytona-provider-macos/pkg/client"
+	"github.com/Rutik7066/daytona-provider-macos/pkg/types"
 
-	"github.com/Rutik7066/daytona-provider-mac/pkg/docker"
+	"github.com/Rutik7066/daytona-provider-macos/pkg/docker"
 	"github.com/daytonaio/daytona/pkg/logs"
 	"github.com/daytonaio/daytona/pkg/models"
 	"github.com/daytonaio/daytona/pkg/provider"
@@ -73,10 +73,10 @@ func (p *MacProvider) Initialize(req provider.InitializeProviderRequest) (*provi
 }
 
 func (p MacProvider) GetInfo() (models.ProviderInfo, error) {
-	label := "Windows"
+	label := "MacOS"
 
 	return models.ProviderInfo{
-		Name:                 "mac-provider",
+		Name:                 "macos-provider",
 		Label:                &label,
 		AgentlessTarget:      true,
 		Version:              internal.Version,
@@ -145,7 +145,7 @@ func (p MacProvider) StopTarget(targetReq *provider.TargetRequest) (*provider_ut
 		defer targetLogWriter.Close()
 	}
 
-	err = dockerClient.StopTarget(logWriter)
+	err = dockerClient.StopTarget(targetReq.Target, logWriter)
 	if err != nil {
 		return new(provider_util.Empty), err
 	}
@@ -304,11 +304,13 @@ func (p MacProvider) CheckRequirements() (*[]provider.RequirementStatus, error) 
 	return &results, nil
 }
 
+// FIXME
 // Workspace directory and project directory will be on mac vm.
 func (p *MacProvider) getWorkspaceDir(workspaceReq *provider.WorkspaceRequest) (string, error) {
 	return fmt.Sprintf("C:\\Users\\daytona\\Desktop\\%s\\%s", workspaceReq.Workspace.Target.Name, workspaceReq.Workspace.Name), nil
 }
 
+// FIXME
 func (p *MacProvider) getTargetDir(targetReq *provider.TargetRequest) (string, error) {
 	return fmt.Sprintf("C:\\Users\\daytona\\Desktop\\%s", targetReq.Target.Name), nil
 }

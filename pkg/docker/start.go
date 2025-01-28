@@ -31,7 +31,18 @@ func (d *DockerClient) StartTarget(target *models.Target, logWriter io.Writer) e
 
 	d.OpenWebUI(d.targetOptions.RemoteHostname, logWriter)
 
-	err = d.WaitForWindowsBoot(c.ID, d.targetOptions.RemoteHostname)
+	err = d.WaitForMacOsBoot(c.ID, d.targetOptions.RemoteHostname)
+	if err != nil {
+		return err
+	}
+
+	sshClient, err := d.GetSshClient(d.targetOptions.RemoteHostname)
+	if err != nil {
+		return err
+	}
+	defer sshClient.Close()
+
+	err = d.ExecuteCommand("daytona agent --target", logWriter, sshClient)
 	if err != nil {
 		return err
 	}
