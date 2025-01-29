@@ -122,9 +122,13 @@ func (d *DockerClient) initWorkspaceContainer(target *models.Target, logWriter i
 
 		time.Sleep(1 * time.Second)
 	}
+	hostName := "localhost"
+	if d.targetOptions.RemoteHostname != nil {
+		hostName = *d.targetOptions.RemoteHostname
+	}
 
-	logWriter.Write([]byte("Visit http://localhost:8006 and Set up MacOS \n"))
-	logWriter.Write([]byte(`Set USERNAME and PASSWORD to  "daytona"\n`))
+	logWriter.Write([]byte(fmt.Sprintf("Visit http://%s:8006 and Set up MacOS \n", hostName)))
+	logWriter.Write([]byte("Set USERNAME \"daytona\" and PASSWORD \"daytona\" \n"))
 	logWriter.Write([]byte("Please turn on Remote Login to continue.....\n"))
 	time.Sleep(15 * time.Second)
 
@@ -141,19 +145,6 @@ func (d *DockerClient) initWorkspaceContainer(target *models.Target, logWriter i
 	}
 	defer sshClient.Close()
 
-	for key, env := range target.EnvVars {
-		err = d.ExecuteCommand(fmt.Sprintf("echo 'export %s=\"%s\"' >> ~/.zshrc", key, env), nil, sshClient)
-		if err != nil {
-			logWriter.Write([]byte(fmt.Sprintf("failed to set env variable %s to %s: %s\n", key, env, err.Error())))
-		}
-	}
-
-	// Setting env
-	err = d.ExecuteCommand("source ~/.zshrc", nil, sshClient)
-	if err != nil {
-		logWriter.Write([]byte("failed to set env variable DAYTONA_AGENT_LOG_FILE_PATH to C:\\Users\\daytona\\.daytona-agent.log\n"))
-	}
-
 	// disable pass propmt for sudo
 	noPropmt := `echo 'daytona' | sudo -S bash -c 'echo "daytona ALL=(ALL) NOPASSWD:ALL" | sudo EDITOR="tee -a" visudo'`
 	err = d.ExecuteCommand(noPropmt, nil, sshClient)
@@ -168,31 +159,31 @@ func (d *DockerClient) initWorkspaceContainer(target *models.Target, logWriter i
 		`echo 'eval "$(/usr/local/bin/brew shellenv)"' >> /Users/daytona/.zprofile`,
 		`eval "$(/usr/local/bin/brew shellenv)"`,
 		"brew install git",
-		"echo 'pass in proto tcp from any to any port 2222' | sudo tee -a /etc/pf.conf",
-		"echo 'pass out proto tcp from any to any port 2222' | sudo tee -a /etc/pf.conf",
-		"sudo pfctl -f /etc/pf.conf",
-		"sudo pfctl -E",
+		"brew install tmux",
 	}
 
 	for _, command := range commands {
-		err = d.ExecuteCommand(command, logWriter, sshClient)
+		err = d.ExecuteCommand(command, nil, sshClient)
 		if err != nil {
 			logWriter.Write([]byte(fmt.Sprintf("failed to execute command %s: %s\n", command, err.Error())))
 		}
 	}
 
-	//auto log in
-	autoLogin := "sudo defaults write /Library/Preferences/com.apple.loginwindow autoLoginUser daytona"
-	err = d.ExecuteCommand(autoLogin, nil, sshClient)
-	if err != nil {
-		logWriter.Write([]byte(fmt.Sprintf("failed to execute command %s: %s\n", autoLogin, err.Error())))
-	}
-
-	// install Daytona
-	logWriter.Write([]byte("Installing Daytona Agent...\n"))
 	err = d.ExecuteCommand("(curl -sf -L https://download.daytona.io/daytona/install.sh | sudo bash)", logWriter, sshClient)
 	if err != nil {
-		logWriter.Write([]byte(fmt.Sprintf("failed to execute command %s: %s\n", autoLogin, err.Error())))
+		logWriter.Write([]byte(fmt.Sprintf("failed to execute command %s: %s\n", "daytona install", err.Error())))
+	}
+
+	for key, env := range target.EnvVars {
+		err = d.ExecuteCommand(fmt.Sprintf("echo 'export %s=\"%s\"' >> ~/.zshrc", key, env), nil, sshClient)
+		if err != nil {
+			logWriter.Write([]byte(fmt.Sprintf("failed to set env variable %s to %s: %s\n", key, env, err.Error())))
+		}
+	}
+
+	err = d.ExecuteCommand("source ~/.zshrc", nil, sshClient)
+	if err != nil {
+		logWriter.Write([]byte("failed to run 'source ~/.zshrc'\n"))
 	}
 
 	return nil
@@ -201,6 +192,7 @@ func (d *DockerClient) initWorkspaceContainer(target *models.Target, logWriter i
 func GetContainerCreateConfig(target *models.Target, toolboxApiHostPort *uint16) *container.Config {
 	envVars := []string{
 		fmt.Sprintf("ARGUMENTS=%s", "-device e1000,netdev=net0  -netdev user,id=net0,hostfwd=tcp::22-:22,hostfwd=tcp::2222-:2222 "),
+		"RAM_SIZE=2G",
 	}
 
 	for key, value := range target.EnvVars {

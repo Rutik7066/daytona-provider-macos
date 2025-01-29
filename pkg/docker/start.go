@@ -40,11 +40,24 @@ func (d *DockerClient) StartTarget(target *models.Target, logWriter io.Writer) e
 	if err != nil {
 		return err
 	}
-	defer sshClient.Close()
 
-	err = d.ExecuteCommand("daytona agent --target", logWriter, sshClient)
+	err = d.ExecuteCommand("tmux new-session -s agent -d 'daytona agent --target'", logWriter, sshClient)
+	if err != nil {
+		logWriter.Write([]byte(fmt.Sprintf("failed to execute command %s: %s\n", "daytona agent --target", err.Error())))
+	}
+
+	return nil
+}
+
+func (d *DockerClient) StartWorkspace(workspace *models.Workspace, logWriter io.Writer) error {
+	sshClient, err := d.GetSshClient(d.targetOptions.RemoteHostname)
 	if err != nil {
 		return err
+	}
+
+	err = d.ExecuteCommand("tmux new-session -s agent -d 'daytona agent --target'", logWriter, sshClient)
+	if err != nil {
+		logWriter.Write([]byte(fmt.Sprintf("failed to execute command %s: %s\n", "daytona agent --target", err.Error())))
 	}
 
 	return nil
