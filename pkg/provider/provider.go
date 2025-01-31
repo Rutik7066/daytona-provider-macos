@@ -78,7 +78,7 @@ func (p MacProvider) GetInfo() (models.ProviderInfo, error) {
 	return models.ProviderInfo{
 		Name:                 "macos-provider",
 		Label:                &label,
-		AgentlessTarget:      true,
+		AgentlessTarget:      false,
 		Version:              internal.Version,
 		TargetConfigManifest: *types.GetTargetConfigManifest(),
 	}, nil

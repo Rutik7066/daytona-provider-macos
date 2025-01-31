@@ -34,7 +34,6 @@ type IDockerClient interface {
 	CreateWorkspace(opts *CreateWorkspaceOptions) error
 	CreateTarget(target *models.Target, targetDir string, logWriter io.Writer, sshClient *ssh.Client) error
 
-	StartWorkspace(workspace *models.Workspace, logWriter io.Writer) error
 	StartTarget(target *models.Target, logWriter io.Writer) error
 
 	DestroyWorkspace(workspace *models.Workspace, workspaceDir string, logWriter io.Writer) error

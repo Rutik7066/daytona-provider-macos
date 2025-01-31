@@ -145,25 +145,26 @@ func (d *DockerClient) initWorkspaceContainer(target *models.Target, logWriter i
 	}
 	defer sshClient.Close()
 
-	// disable pass propmt for sudo
+	logWriter.Write([]byte("Configuring MacOS \n"))
+
 	noPropmt := `echo 'daytona' | sudo -S bash -c 'echo "daytona ALL=(ALL) NOPASSWD:ALL" | sudo EDITOR="tee -a" visudo'`
-	err = d.ExecuteCommand(noPropmt, nil, sshClient)
+	err = d.ExecuteCommand(noPropmt, logWriter, sshClient)
 	if err != nil {
 		logWriter.Write([]byte(fmt.Sprintf("failed to execute command %s: %s\n", noPropmt, err.Error())))
 	}
 
-	// Installing git && allow port 2222 in firewall
 	commands := []string{
+		"rm -rf ~/.zshrc",
+		"touch ~/.zshrc",
 		`NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" -y`,
 		"echo >> /Users/daytona/.zprofile",
-		`echo 'eval "$(/usr/local/bin/brew shellenv)"' >> /Users/daytona/.zprofile`,
-		`eval "$(/usr/local/bin/brew shellenv)"`,
-		"brew install git",
-		"brew install tmux",
+		`echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.zshrc`,
+		`source ~/.zshrc`,
+		"/usr/local/bin/brew install tmux",
 	}
 
 	for _, command := range commands {
-		err = d.ExecuteCommand(command, nil, sshClient)
+		err = d.ExecuteCommand(command, logWriter, sshClient)
 		if err != nil {
 			logWriter.Write([]byte(fmt.Sprintf("failed to execute command %s: %s\n", command, err.Error())))
 		}
@@ -175,13 +176,13 @@ func (d *DockerClient) initWorkspaceContainer(target *models.Target, logWriter i
 	}
 
 	for key, env := range target.EnvVars {
-		err = d.ExecuteCommand(fmt.Sprintf("echo 'export %s=\"%s\"' >> ~/.zshrc", key, env), nil, sshClient)
+		err = d.ExecuteCommand(fmt.Sprintf("echo 'export %s=\"%s\"' >> ~/.zshrc", key, env), logWriter, sshClient)
 		if err != nil {
 			logWriter.Write([]byte(fmt.Sprintf("failed to set env variable %s to %s: %s\n", key, env, err.Error())))
 		}
 	}
 
-	err = d.ExecuteCommand("source ~/.zshrc", nil, sshClient)
+	err = d.ExecuteCommand("source ~/.zshrc", logWriter, sshClient)
 	if err != nil {
 		logWriter.Write([]byte("failed to run 'source ~/.zshrc'\n"))
 	}
@@ -192,7 +193,6 @@ func (d *DockerClient) initWorkspaceContainer(target *models.Target, logWriter i
 func GetContainerCreateConfig(target *models.Target, toolboxApiHostPort *uint16) *container.Config {
 	envVars := []string{
 		fmt.Sprintf("ARGUMENTS=%s", "-device e1000,netdev=net0  -netdev user,id=net0,hostfwd=tcp::22-:22,hostfwd=tcp::2222-:2222 "),
-		"RAM_SIZE=2G",
 	}
 
 	for key, value := range target.EnvVars {
